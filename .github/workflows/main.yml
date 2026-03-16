@@ -2,7 +2,8 @@ name: Notifier Bot
 
 on:
   schedule:
-    - cron: '0 23 * * *' # 6:00 AM VN (UTC+7)
+    - cron: '0 23 * * *'  # 6:00 AM VN
+    - cron: '0 15 * * *'  # 10:00 PM VN
   workflow_dispatch:
 
 permissions:
