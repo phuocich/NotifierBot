@@ -46,22 +46,14 @@ if (!File.Exists(statePath) || new FileInfo(statePath).Length == 0)
 // load state
 var stateJson = await File.ReadAllTextAsync(statePath);
 
-var state = JsonSerializer.Deserialize<State>(stateJson) ?? new State();
+var state = JsonSerializer.Deserialize<State>(stateJson,
+    new JsonSerializerOptions
+    {
+        PropertyNameCaseInsensitive = true
+    }) ?? new State();
 
 Console.WriteLine($"LastVerse: {state.LastVerse}");
 Console.WriteLine($"LastDate: {state.LastDate}");
-
-// VN timezone
-var today = DateTime.UtcNow.AddHours(7).Date.ToString("yyyy-MM-dd");
-
-Console.WriteLine($"Today: {today}");
-
-// prevent duplicate send
-if (state.LastDate == today)
-{
-    Console.WriteLine("Already sent today.");
-    return;
-}
 
 // next verse
 var nextVerse = state.LastVerse + 1;
@@ -109,7 +101,6 @@ Console.WriteLine($"Sent verse {nextVerse}");
 
 // update state
 state.LastVerse = nextVerse;
-state.LastDate = today;
 
 await File.WriteAllTextAsync(
     statePath,
