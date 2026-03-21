@@ -24,13 +24,13 @@ public class AudioService
         }.Build();
     }
 
-    public Task<MemoryStream> GetBhanteThichMinhChauAsync(Verse verse)
-        => GenerateAsync(verse, verse.BhanteThichMinhChau);
+    public Task<MemoryStream> GetBhanteThichMinhChauAsync(Item item)
+        => GenerateAsync(item, item.BhanteThichMinhChau);
 
-    public Task<MemoryStream> GetBhanteIndacandaAsync(Verse verse)
-        => GenerateAsync(verse, verse.BhanteIndacanda);
+    public Task<MemoryStream> GetBhanteIndacandaAsync(Item item)
+        => GenerateAsync(item, item.BhanteIndacanda);
 
-    private async Task<MemoryStream> GenerateAsync(Verse verse, string content)
+    private async Task<MemoryStream> GenerateAsync(Item item, string content)
     {
         var input = new SynthesisInput
         {

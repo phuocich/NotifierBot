@@ -16,19 +16,19 @@ if (!File.Exists(dataPath))
     return;
 }
 
-// load verses
+// load items
 var json = await File.ReadAllTextAsync(dataPath);
 
-var verses = JsonSerializer.Deserialize<List<Verse>>(
+var items = JsonSerializer.Deserialize<List<Item>>(
     json,
     new JsonSerializerOptions
     {
         PropertyNameCaseInsensitive = true
     });
 
-if (verses == null || verses.Count == 0)
+if (items == null || items.Count == 0)
 {
-    Console.WriteLine("No verses found.");
+    Console.WriteLine("No items found.");
     return;
 }
 
@@ -52,70 +52,70 @@ var state = JsonSerializer.Deserialize<State>(stateJson,
         PropertyNameCaseInsensitive = true
     }) ?? new State();
 
-Console.WriteLine($"LastVerse: {state.LastVerse}");
+Console.WriteLine($"LastItem: {state.LastItem}");
 Console.WriteLine($"LastDate: {state.LastDate}");
 
-// next verse
-var nextVerse = state.LastVerse + 1;
+// next item
+var nextItem = state.LastItem + 1;
 
-if (nextVerse > verses.Count)
-    nextVerse = 1;
+if (nextItem > items.Count)
+    nextItem = 1;
 
-var verse = verses.FirstOrDefault(x => x.Number == nextVerse);
+var item = items.FirstOrDefault(x => x.Number == nextItem);
 
-if (verse == null)
+if (item == null)
 {
-    Console.WriteLine("Verse not found.");
+    Console.WriteLine("Item not found.");
     return;
 }
 
 // build message
 var sb = new StringBuilder();
 
-sb.AppendLine($"📜 Kinh Pháp Cú – Kệ {verse.Number}");
-sb.AppendLine(verse.Chapter);
+sb.AppendLine($"📜 Kinh Pháp Cú – Kệ {item.Number}");
+sb.AppendLine(item.Chapter);
 sb.AppendLine();
 
 sb.AppendLine("🪷 Pāḷi (Chánh văn)");
 sb.AppendLine();
-sb.AppendLine(verse.Pali.Trim());
+sb.AppendLine(item.Pali.Trim());
 sb.AppendLine();
 
 sb.AppendLine("📖 Việt dịch – Ngài Thích Minh Châu");
 sb.AppendLine();
-sb.AppendLine(verse.BhanteThichMinhChau.Trim());
+sb.AppendLine(item.BhanteThichMinhChau.Trim());
 sb.AppendLine();
 
 sb.AppendLine("📖 Việt dịch – Ngài Indacanda");
 sb.AppendLine();
-sb.AppendLine(verse.BhanteIndacanda.Trim());
+sb.AppendLine(item.BhanteIndacanda.Trim());
 
 var message = sb.ToString();
 
 var audioService = new AudioService();
 var telegram = new TelegramService();
 
-var bhanteThichMinhChauStream = await audioService.GetBhanteThichMinhChauAsync(verse);
-var bhanteIndacandaStream = await audioService.GetBhanteIndacandaAsync(verse);
+var bhanteThichMinhChauStream = await audioService.GetBhanteThichMinhChauAsync(item);
+var bhanteIndacandaStream = await audioService.GetBhanteIndacandaAsync(item);
 
 await telegram.SendMessage(message);
 
 await telegram.SendAudio(
     bhanteThichMinhChauStream,
-    $"{verse.Number}_BhanteThichMinhChau.mp3",
-    $"📖 Ngài Thích Minh Châu – Kệ {verse.Number}"
+    $"{item.Number}_BhanteThichMinhChau.mp3",
+    $"📖 Ngài Thích Minh Châu – Kệ {item.Number}"
 );
 
 await telegram.SendAudio(
     bhanteIndacandaStream,
-    $"{verse.Number}_BhanteIndacanda.mp3",
-    $"📖 Ngài Indacanda – Kệ {verse.Number}"
+    $"{item.Number}_BhanteIndacanda.mp3",
+    $"📖 Ngài Indacanda – Kệ {item.Number}"
 );
 
-Console.WriteLine($"Sent verse {nextVerse}");
+Console.WriteLine($"Sent item {nextItem}");
 
 // update state
-state.LastVerse = nextVerse;
+state.LastItem = nextItem;
 
 await File.WriteAllTextAsync(
     statePath,
