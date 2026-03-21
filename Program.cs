@@ -103,7 +103,7 @@ await telegram.SendMessage(message);
 await telegram.SendAudio(
     bhanteThichMinhChauStream,
     $"{verse.Number}_BhanteThichMinhChau.mp3",
-    $"📖 Ngài Minh Châu – Kệ {verse.Number}"
+    $"📖 Ngài Thích Minh Châu – Kệ {verse.Number}"
 );
 
 await telegram.SendAudio(
