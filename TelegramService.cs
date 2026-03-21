@@ -21,7 +21,7 @@ namespace NotifierBot
                 throw new Exception("TELEGRAM_CHAT_ID not found");
         }
 
-        public async Task Send(string message)
+        public async Task SendMessage(string message)
         {
             var url = $"https://api.telegram.org/bot{_token}/sendMessage";
 
@@ -30,6 +30,21 @@ namespace NotifierBot
                 chat_id = _chatId,
                 text = message
             });
+        }
+
+        public async Task SendAudio(Stream stream, string fileName, string caption)
+        {
+            var url = $"https://api.telegram.org/bot{_token}/sendAudio";
+
+            using var form = new MultipartFormDataContent();
+
+            form.Add(new StringContent(_chatId), "chat_id");
+            form.Add(new StringContent(caption), "caption");
+
+            var streamContent = new StreamContent(stream);
+            form.Add(streamContent, "audio", fileName);
+
+            await _http.PostAsync(url, form);
         }
     }
 }

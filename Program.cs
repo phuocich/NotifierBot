@@ -92,10 +92,25 @@ sb.AppendLine(verse.BhanteIndacanda.Trim());
 
 var message = sb.ToString();
 
-// send telegram
+var audioService = new AudioService();
 var telegram = new TelegramService();
 
-await telegram.Send(message);
+var bhanteThichMinhChauStream = await audioService.GetBhanteThichMinhChauAsync(verse);
+var bhanteIndacandaStream = await audioService.GetBhanteIndacandaAsync(verse);
+
+await telegram.SendMessage(message);
+
+await telegram.SendAudio(
+    bhanteThichMinhChauStream,
+    $"{verse.Number}_BhanteThichMinhChau.mp3",
+    $"📖 Ngài Minh Châu – Kệ {verse.Number}"
+);
+
+await telegram.SendAudio(
+    bhanteIndacandaStream,
+    $"{verse.Number}_BhanteIndacanda.mp3",
+    $"📖 Ngài Indacanda – Kệ {verse.Number}"
+);
 
 Console.WriteLine($"Sent verse {nextVerse}");
 
@@ -108,21 +123,3 @@ await File.WriteAllTextAsync(
 );
 
 Console.WriteLine("State updated.");
-
-
-// models
-
-public class State
-{
-    public int LastVerse { get; set; } = 0;
-    public string LastDate { get; set; } = "";
-}
-
-public class Verse
-{
-    public int Number { get; set; }
-    public string Chapter { get; set; } = "";
-    public string Pali { get; set; } = "";
-    public string BhanteThichMinhChau { get; set; } = "";
-    public string BhanteIndacanda { get; set; } = "";
-}

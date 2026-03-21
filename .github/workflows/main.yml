@@ -2,7 +2,7 @@ name: Notifier Bot
 
 on:
   schedule:
-    - cron: '0 22 * * *'  # 5:00 AM VN
+    - cron: '0 22 * * *'   # 5:00 AM VN
     - cron: '30 14 * * *'  # 09:30 PM VN
   workflow_dispatch:
 
@@ -25,6 +25,10 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0'
+
+      - name: Setup Google credentials
+        run: |
+          echo '${{ secrets.GOOGLE_TTS_CREDENTIALS }}' > key.json
 
       - name: Run bot
         run: dotnet run --project NotifierBot.csproj
